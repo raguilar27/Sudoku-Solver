@@ -311,7 +311,7 @@ def main():
 
                 if event.key == pygame.K_SPACE:
                     board.solve_gui()
-                    print("Correct Solution Displayed!")
+                    print("Solution Displayed! Game Over")
 
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
