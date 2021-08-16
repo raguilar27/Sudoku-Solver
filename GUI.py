@@ -1,10 +1,11 @@
 import pygame
 import os
-import solver
+from solver import valid, find_empty
 import time
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 pygame.font.init()
+
 
 class Grid:
     board = [
@@ -39,7 +40,7 @@ class Grid:
             self.cubes[row][col].set(val)
             self.update_model()
 
-            if valid(self.model, val, (row,col)) and self.solve():
+            if valid(self.model, val, (row, col)) and self.solve():
                 return True
             else:
                 self.cubes[row][col].set(0)
@@ -57,22 +58,21 @@ class Grid:
         for i in range(self.rows+1):
             if i % 3 == 0 and i != 0:
                 thick = 4
-            else: 
+            else:
                 thick = 1
-        pygame.draw.line(self.win, (0, 0 ,0 ), (0, i*gap), (self.width, i*gap), thick)
+        pygame.draw.line(self.win, (0, 0, 0), (0, i*gap), (self.width, i*gap), thick)
         pygame.draw.line(self.win, (0, 0, 0), (i*gap, 0), (i*gap, self.height), thick)
 
-        #Draw Cubes 
+        # Draw cubes
         for i in range(self.rows):
             for j in range(self.cols):
                 self.cubes[i][j].draw(self.win)
 
     def select(self, row, col):
-        #Reset all other
+        # Reset all other
         for i in range(self.rows):
             for j in range(self.cols):
                 self.cubes[i][j].selected = False
-        
         self.cubes[row][col].selected = True
         self.selected = (row, col)
 
@@ -102,10 +102,10 @@ class Grid:
         return True
 
     def solve(self):
-        find = find.empty(self.model)
-        if not find: 
+        find = find_empty(self.model)
+        if not find:
             return True
-        else: 
+        else:
             row, col = find
 
         for i in range(1, 10):
@@ -124,7 +124,8 @@ class Grid:
         find = find_empty(self.model)
         if not find:
             return True
-        else: row, col = find
+        else:
+            row, col = find
 
         for i in range(1, 10):
             if valid(self.model, i, (row, col)):
@@ -144,7 +145,6 @@ class Grid:
                 self.cubes[row][col].draw_change(self.win, False)
                 pygame.display.update()
                 pygame.time.delay(100)
-        
         return False
 
 
@@ -188,7 +188,7 @@ class Cube:
         pygame.draw.rect(win, (255, 255, 255), (x, y, gap, gap), 0)
 
         text = fnt.render(str(self.value), 1, (0, 0, 0))
-        win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text/get_height() / 2)))
+        win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
         if g:
             pygame.draw.rect(win, (0, 255, 0), (x, y, gap, gap), 3)
         else:
@@ -213,15 +213,17 @@ def redraw_window(win, board, time, strikes):
     # Draw grid and board
     board.draw()
 
+
 def format_time(secs):
-    sec = secs%60
+    sec = secs % 60
     minute = secs//60
     hour = minute//60
 
     mat = " " + str(minute) + ":" + str(sec)
     return mat
 
-def main(): 
+
+def main():
     win = pygame.display.set_mode((540, 600))
     pygame.display.set_caption("Sudoku")
     board = Grid(9, 9, 540, 540, win)
@@ -276,19 +278,17 @@ def main():
                 if event.key == pygame.K_DELETE:
                     board.clear()
                     key = None
-
-                
-                if event.key ==  pygame.K_SPACE:
+                if event.key == pygame.K_SPACE:
                     board.solve_gui()
 
-                if event.key ==  pygame.K_RETURN:
+                if event.key == pygame.K_RETURN:
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
                         if board.place(board.cubes[i][j].temp):
                             print("Correct!")
-                        else: 
+                        else:
                             print("Wrong!")
-                            strike += 1
+                            strikes += 1
                         key = None
 
                         if board.is_finished():
@@ -301,7 +301,7 @@ def main():
                     board.select(clicked[0], clicked[1])
                     key = None
 
-        if board.selected and key != None:
+        if board.selected and key is not None:
             board.sketch(key)
 
         redraw_window(win, board, play_time, strikes)
@@ -310,5 +310,3 @@ def main():
 
 main()
 pygame.quit()
-
-
