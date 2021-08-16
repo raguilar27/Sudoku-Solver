@@ -134,15 +134,15 @@ class Grid:
                 pygame.display.update()
                 pygame.time.delay(100)
 
-                if self.solve_gui:
+                if self.solve_gui():
                     return True
-
-                self.modle[row][col] = 0
-                self.cubes[row][col].set(0)
-                self.update_model()
-                self.cubes[row][col].draw_change(self.win, False)
-                pygame.display.update()
-                pygame.time.delay(100)
+                else:
+                    self.model[row][col] = 0
+                    self.cubes[row][col].set(0)
+                    self.update_model()
+                    self.cubes[row][col].draw_change(self.win, False)
+                    pygame.display.update()
+                    pygame.time.delay(100)
         return False
 
 
@@ -311,6 +311,7 @@ def main():
 
                 if event.key == pygame.K_SPACE:
                     board.solve_gui()
+                    print("Correct Solution Displayed!")
 
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
@@ -332,7 +333,7 @@ def main():
                     board.select(clicked[0], clicked[1])
                     key = None
 
-        if board.selected and key != None:
+        if board.selected and key is not None:
             board.sketch(key)
 
         redraw_window(win, board, play_time, strikes)
